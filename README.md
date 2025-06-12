@@ -1,36 +1,89 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 📊 Excel Data Comparator
 
-## Getting Started
+Невеликий Next.js-додаток для обробки Excel-файлів: об’єднання, підрахунок сум і кількості записів для унікальних значень, порівняння даних та експорт результатів у Excel.
 
-First, run the development server:
+## 🔧 Технології
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+- **Next.js (App Router)**
+- **React**
+- **Tailwind CSS**
+- **xlsx** — для роботи з Excel
+- **TypeScript**
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 🖼️ Можливості
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- Завантаження двох `.xlsx` файлів:
+  - Перший файл містить список унікальних значень (`key`);
+  - Другий — таблицю з даними для агрегації (включаючи `key`, `total` тощо).
+- Підрахунок:
+  - загальної **суми** та **кількості** по кожному ключу;
+  - **формування зведеної таблиці**.
+- **Експорт у Excel-файл** з назвою на вибір.
+- Вивід HTML-таблиці результатів прямо на сторінці.
 
-## Learn More
+---
 
-To learn more about Next.js, take a look at the following resources:
+## 📁 Структура проєкту
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+📦 excel-data-comparator
+┣ 📂app
+┃ ┣ 📜page.tsx
+┃ ┗ 📂components
+┃ ┣ 📜UploadForm.tsx
+┃ ┣ 📜ResultTable.tsx
+┃ ┗ 📜DownloadButton.tsx
+┣ 📂utils
+┃ ┣ 📜excelParser.ts
+┃ ┗ 📜exportToExcel.ts
+┣ 📜README.md
+┗ 📜package.json
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
 
-## Deploy on Vercel
+📤 Експорт у Excel
+Функція exportToExcel() створює файл з:
+- колонками Назва, Сума, Кількість;
+- останнім рядком "Всього" — із загальною сумою та кількістю;
+- автоматичною шириною колонок.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### 💡 Приклад вхідних файлів
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+**Файл 1 (унікальні значення) — `keys.xlsx`:**
+
+| key    |
+|--------|
+| Apple  |
+| Banana |
+| Orange |
+
+---
+
+**Файл 2 (дані для агрегації) — `data.xlsx`:**
+
+| key    | total |
+|--------|-------|
+| Apple  | 100   |
+| Apple  | 150   |
+| Banana | 80    |
+| Apple  | 50    |
+
+---
+
+**Результат:**
+
+| Назва  | Сума | Кількість |
+|:-------|-----:|:---------:|
+| Apple  |  300 |     3     |
+| Banana |   80 |     1     |
+| Orange |    0 |     0     |
+| **Всього** | **380** | **4** |
+
+
+
+📜 Ліцензія
+MIT — використовуй, як хочеш 🤝
+
+✍️ Автор
+Розроблено з ❤️ у Дніпрі
+
