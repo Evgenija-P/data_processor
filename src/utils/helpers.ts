@@ -1,29 +1,6 @@
 // app/utils/helpers.ts
 import * as XLSX from 'xlsx';
 
-// export const parseExcelFile = async (file: File): Promise<{
-//   data: Record<string, any>[],
-//   columns: string[]
-// }> => {
-//   return new Promise((resolve, reject) => {
-//     const reader = new FileReader();
-//     reader.onload = (e) => {
-//       const data = new Uint8Array(e.target?.result as ArrayBuffer);
-//       const workbook = XLSX.read(data, { type: "array" });
-//       const worksheet = workbook.Sheets[workbook.SheetNames[0]];
-//       const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 }) as any[][];
-
-//       const headers = jsonData[0] as string[];
-//       const rows = XLSX.utils.sheet_to_json(worksheet) as Record<string, any>[];
-
-//       resolve({ data: rows, columns: headers });
-//     };
-//     reader.onerror = reject;
-//     reader.readAsArrayBuffer(file);
-//   });
-// };
-//
-
 export const parseExcelFile = async (
   file: File
 ): Promise<{
@@ -114,22 +91,37 @@ export const exportToExcel = (
   data: { key: string; total: number; count: number }[],
   fileName: string
 ) => {
-  const ws = XLSX.utils.json_to_sheet(
-    data.map(row => ({
-      Назва: row.key,
-      Сума: row.total,
-      Кількість: row.count,
-    }))
-  );
+  // Формуємо масив рядків для таблиці
+  const rows = data.map(row => ({
+    Назва: row.key,
+    Сума: row.total,
+    Кількість: row.count,
+  }));
 
-  // Встановлюємо ширину колонок (під текст)
+  // Додаємо рядок з підсумками
+  const totalSum = data.reduce((acc, cur) => acc + cur.total, 0);
+  const totalCount = data.reduce((acc, cur) => acc + cur.count, 0);
+
+  rows.push({
+    Назва: 'Всього',
+    Сума: totalSum,
+    Кількість: totalCount,
+  });
+
+  // Створюємо лист з даних
+  const ws = XLSX.utils.json_to_sheet(rows);
+
+  // Встановлюємо ширину колонок
   ws['!cols'] = [
     { width: 50 }, // Назва
     { width: 15 }, // Сума
     { width: 15 }, // Кількість
   ];
 
+  // Створюємо книгу й додаємо лист
   const wb = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb, ws, 'Results');
-  XLSX.writeFile(wb, fileName);
+
+  // Експортуємо у файл
+  XLSX.writeFile(wb, fileName.endsWith('.xlsx') ? fileName : `${fileName}.xlsx`);
 };
